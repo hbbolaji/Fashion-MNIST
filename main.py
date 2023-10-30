@@ -2,15 +2,17 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, datasets
 from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
+import os.path
 from FashionMNISTModel import FashionMNISTModel
-from train_step import train_step as ts
-from helper_function import accuracy
+from train_step import train_step
+from test_step import test_step
+from helper_function import accuracy, eval_model
 
 # Hyperparameter
-epochs = 5
-lr = 0.1
+epochs = 1
+lr = 0.01
 batch_size = 32
+exploration = False
 
 # Device agnostic
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -21,6 +23,9 @@ transform = transforms.Compose([transforms.ToTensor()])
 # dataset
 train_set = datasets.FashionMNIST('./data', train=True, transform=transform, download=True)
 test_set = datasets.FashionMNIST('./data', train=False, download=True, transform=transform)
+
+classes = train_set.classes
+class_to_idx = train_set.class_to_idx
 
 # dataloader
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
@@ -36,6 +41,18 @@ model = FashionMNISTModel(input_shape= 28*28,
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 
-# Training Loop
-for epoch in range(1):
-  ts(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, accuracy=accuracy, device=device)
+# Training and Testing Loop
+for epoch in range(epochs):
+  print(f'{epoch + 1} / {epochs}')
+  train_step(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, accuracy=accuracy, device=device)
+  test_step(model, test_loader, criterion, accuracy, device)
+
+# Model Evaluation
+model_result = eval_model(model, test_loader, criterion, accuracy)
+print(model_result)
+
+# saving model
+if os.path.isfile('./model.pth'):
+  print('Model Already Saved')
+else:
+  torch.save(model.state_dict(), './model.pth')

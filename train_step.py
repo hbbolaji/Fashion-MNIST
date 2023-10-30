@@ -36,9 +36,8 @@ def train_step(model: nn.Module, data_loader:DataLoader, criterion:nn.Module, ac
     loss.backward()
     # update gradient
     optimizer.step()
+    
   # Average loss and accuracy
   train_loss /= len(data_loader)
   train_acc /= len(data_loader)
-  print(f'Trainning Loss: {train_loss.item()} Training Accuracy: {train_acc.item()}')
-    
-
+  print(f'Trainning Loss: {train_loss.item():.3f} Training Accuracy: {train_acc.item():.3f}%')
