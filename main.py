@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import os.path
 import matplotlib.pyplot as plt
 from FashionMNISTModel import FashionMNISTModel
+from FashionMNISTCNNModel import FashionMNISTCNNModel
 from train_step import train_step
 from test_step import test_step
 from helper_function import accuracy, eval_model, visualize
@@ -43,23 +44,25 @@ else:
   model = FashionMNISTModel(input_shape= 28*28,
                             hidden_units=10,
                             output_shape=10).to(device)
+  modelv1 = FashionMNISTCNNModel(1, 10, len(classes)).to(device)
 
   # Optimizer and loss Function
   criterion = nn.CrossEntropyLoss()
-  optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+  optimizer = torch.optim.SGD(modelv1.parameters(), lr=lr)
 
   # Training and Testing Loop
   for epoch in range(epochs):
     print(f'{epoch + 1} / {epochs}')
-    train_step(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, accuracy=accuracy, device=device)
-    test_step(model, test_loader, criterion, accuracy, device)
+    train_step(model=modelv1, data_loader=train_loader, criterion=criterion, optimizer=optimizer, accuracy=accuracy, device=device)
+    test_step(modelv1, test_loader, criterion, accuracy, device)
 
   # Model Evaluation
-  model_result = eval_model(model, test_loader, criterion, accuracy)
+  model_result = eval_model(modelv1, test_loader, criterion, accuracy)
   print(model_result)
 
 # saving model
-if os.path.isfile('./model.pth'):
+path = '' # Enter the path to save your model
+if os.path.isfile(path):
   print('Model Already Saved')
 else:
-  torch.save(model.state_dict(), './model.pth')
+  torch.save(modelv1.state_dict(), './modelv1.pth')
