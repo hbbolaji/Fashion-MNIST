@@ -22,8 +22,8 @@ def test_step(model:nn.Module, data_loader: DataLoader, criterion: nn.Module, ac
     # Average test loss and accuracy
     test_acc /= len(data_loader)
     test_loss /= len(data_loader)
-    print(f'Test Loss: {test_loss:.3f} | Test Accuracy: {test_acc:.3f}')
+    print(f'Test Loss: {test_loss.item():.3f} | Test Accuracy: {test_acc.item():.3f}')
 
-    return test_acc, test_loss
+    return test_acc.item(), test_loss.item()
   
 

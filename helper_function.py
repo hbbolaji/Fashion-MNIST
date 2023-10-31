@@ -18,3 +18,6 @@ def eval_model(model:nn.Module, data_loader: DataLoader, criterion: nn.Module, a
       "model_loss": loss,
       "model_accuracy": acc
     }
+
+def visualize():
+  return
